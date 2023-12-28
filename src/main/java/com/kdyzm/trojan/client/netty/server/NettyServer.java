@@ -36,11 +36,8 @@ public class NettyServer {
                     .option(ChannelOption.SO_BACKLOG, 512)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
                     .childHandler(new NettyServerInitializer(clientWorkGroup, configProperties, configUtil));
-            ChannelFuture socks5Future = bootstrap.bind(configProperties.getSocks5Port()).sync();
-            log.info("socks5 netty server has started on port {}", configProperties.getSocks5Port());
             ChannelFuture httpFuture = bootstrap.bind(configProperties.getHttpPort()).sync();
             log.info("http netty server has started on port {}", configProperties.getHttpPort());
-            socks5Future.channel().closeFuture().sync();
             httpFuture.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
