@@ -95,17 +95,7 @@ public class TestMain {
         /**
          * 发送第一个包，建立Trojan连接
          */
-        DefaultHttpHeaders headers = new DefaultHttpHeaders();
-        headers.set("User-Agent", "curl/8.4.0");// 这些header都是按照"curl -x 127.0.0.1:10810 www.google.com"这个指令编写的，具体含义暂时不讨论
-        headers.set("Accept", "*/*");
-        headers.set("Proxy-Connection", "Keep-Alive");
-        headers.set("Host", "www.google.com");
-        HttpRequest req = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, _uri_http, headers);// 创建访问www.google.com的http请求
-
-        EmbeddedChannel em = new EmbeddedChannel(new HttpRequestEncoder());
-        em.writeOutbound(req);// 将http请求转换成ByteBuf
-        final ByteBuf payload = (ByteBuf) em.readOutbound();
-        em.close();
+        final ByteBuf payload = generatePayload(_uri, _uri_http);
 
         ByteBuf out = Unpooled.buffer(1024);// 开始构建第一个trojan请求。第一个trojan请求中需要携带很多信息，之后的请求中不需要。
         String password = encryptThisString(_password);// hex(SHA224(password))
@@ -131,6 +121,21 @@ public class TestMain {
             Thread.sleep(1000);
             channel.writeAndFlush(payload.copy());
         }
+    }
+
+    private static ByteBuf generatePayload(String uri, String uriHttp) {
+        DefaultHttpHeaders headers = new DefaultHttpHeaders();
+        headers.set("User-Agent", "curl/8.4.0");// 这些header都是按照"curl -x 127.0.0.1:10810 www.google.com"这个指令编写的，具体含义暂时不讨论
+        headers.set("Accept", "*/*");
+        headers.set("Proxy-Connection", "Keep-Alive");
+        headers.set("Host", uri);
+        HttpRequest req = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, uriHttp, headers);// 创建访问www.google.com的http请求
+
+        EmbeddedChannel em = new EmbeddedChannel(new HttpRequestEncoder());
+        em.writeOutbound(req);// 将http请求转换成ByteBuf
+        final ByteBuf payload = (ByteBuf) em.readOutbound();
+        em.close();
+        return payload;
     }
 
     private static void encodeAddress(int addressType, ByteBuf out, String dstAddr) {
