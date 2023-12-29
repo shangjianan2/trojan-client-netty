@@ -2,6 +2,7 @@ package com.kdyzm.trojan.client.netty;
 
 import com.kdyzm.trojan.client.netty.config.Config;
 import com.kdyzm.trojan.client.netty.server.NettyServer;
+import com.kdyzm.trojan.client.netty.server.NettyServerV3;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -18,7 +19,8 @@ public class Main {
         ctx.register(Config.class);
         ctx.refresh();
 
-        NettyServer server = ctx.getBean(NettyServer.class);
+        NettyServerV3 server = ctx.getBean(NettyServerV3.class);
+//        NettyServer server = ctx.getBean(NettyServer.class);
         server.start();
 
     }

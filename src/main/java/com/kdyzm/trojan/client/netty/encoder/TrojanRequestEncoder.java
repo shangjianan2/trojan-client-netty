@@ -64,10 +64,10 @@ public class TrojanRequestEncoder extends MessageToByteEncoder<TrojanWrapperRequ
 
     @Override
     protected void encode(ChannelHandlerContext ctx, TrojanWrapperRequest msg, ByteBuf out) throws Exception {
-        log.debug("请求代理服务器发起trojan协议握手");
+        log.info("请求代理服务器发起trojan协议握手");
         switch (state) {
             case INIT:
-                log.debug("trojan协议初次握手");
+                log.info("trojan协议初次握手");
                 String password = Sha224Util.encryptThisString(msg.getPassword());
                 TrojanRequest trojanRequest = msg.getTrojanRequest();
                 out.writeCharSequence(password, StandardCharsets.UTF_8);
@@ -83,11 +83,11 @@ public class TrojanRequestEncoder extends MessageToByteEncoder<TrojanWrapperRequ
                 state = State.SUCCESS;
                 break;
             case SUCCESS:
-                log.debug("转发trojan数据");
+                log.info("转发trojan数据");
                 out.writeBytes((ByteBuf) msg.getPayload());
                 break;
             default:
-                log.debug("未知的状态数据");
+                log.info("未知的状态数据");
         }
 
     }
